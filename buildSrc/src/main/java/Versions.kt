@@ -4,7 +4,7 @@ object Versions {
     const val coroutines = "1.6.4"
     const val composeBom = "2023.01.00"
     const val composeCompiler = "1.4.0"
-    const val gradleAndroidPlugin = "7.4.0"
+    const val gradleAndroidPlugin = "7.4.1"
 
     const val ksp = "1.8.0-1.0.8"
 
