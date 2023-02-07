@@ -1,4 +1,4 @@
-package com.lyrjie.bloodysimpletracker.ui.theme
+package com.lyrjie.bloodysimpletracker.components.ui.theme
 
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Shapes

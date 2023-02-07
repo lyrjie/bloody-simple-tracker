@@ -1,7 +1,7 @@
-package com.lyrjie.bloodysimpletracker.ui
+package com.lyrjie.bloodysimpletracker.components.ui
 
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import androidx.appcompat.app.AppCompatActivity
 import com.lyrjie.bloodysimpletracker.R
 import dagger.hilt.android.AndroidEntryPoint
 
