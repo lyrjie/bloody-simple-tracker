@@ -133,6 +133,7 @@ dependencies {
         implementation(platform(Dependencies.composeBom))
         implementation(Dependencies.composeUi)
         implementation(Dependencies.composeMaterial)
+        implementation(Dependencies.composeMaterial3)
         implementation(Dependencies.composePreview)
     }
 
