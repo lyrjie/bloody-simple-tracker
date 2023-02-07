@@ -157,6 +157,23 @@ dependencies {
     androidTestImplementation(Dependencies.espresso)
 }
 
+tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile>().configureEach {
+    // Fix from https://youtrack.jetbrains.com/issue/KT-55565/Consider-de-duping-or-blocking-standard-addition-of-freeCompilerArgs-to-KaptGenerateStubsTask
+    val isKaptGenerateStubsTask = this is org.jetbrains.kotlin.gradle.internal.KaptGenerateStubsTask
+    if (!isKaptGenerateStubsTask) {
+        kotlinOptions.freeCompilerArgs += listOf(
+            "-P",
+            "plugin:androidx.compose.compiler.plugins.kotlin:metricsDestination=" +
+                    "${project.buildDir.absolutePath}/composeMetrics"
+        )
+        kotlinOptions.freeCompilerArgs += listOf(
+            "-P",
+            "plugin:androidx.compose.compiler.plugins.kotlin:reportsDestination=" +
+                    "${project.buildDir.absolutePath}/composeMetrics"
+        )
+    }
+}
+
 fun com.android.build.gradle.internal.dsl.BaseAppModuleExtension.setBuildOutputPath(isBuildLocal: Boolean) {
     applicationVariants.all {
         outputs.all {
