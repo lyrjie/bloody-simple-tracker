@@ -1,5 +1,7 @@
 @file:Suppress("UnstableApiUsage")
 
+import com.android.build.gradle.internal.cxx.configure.gradleLocalProperties
+
 plugins {
     id(Plugins.androidApplication)
     id(Plugins.kotlinAndroid)
@@ -20,6 +22,8 @@ androidGitVersion {
 }
 
 android {
+    namespace = "com.lyrjie.bloodysimpletracker"
+
     compileSdk = 33
 
     val isBuildLocal = System.getenv("CI") == null
@@ -30,18 +34,17 @@ android {
     println("Generated Version Name: $generatedVersionName")
 
     signingConfigs {
-        // TODO generate keystore
         create(signingConfigName) {
+            val localProperties = gradleLocalProperties(rootDir)
             storeFile = file("../keystore.jks")
-            storePassword = ""
-            keyAlias = ""
-            keyPassword = ""
+            storePassword = localProperties.getProperty("keystore.password")
+            keyAlias = localProperties.getProperty("keystore.keyAlias")
+            keyPassword = localProperties.getProperty("keystore.password")
         }
     }
 
     defaultConfig {
-        // TODO change application id
-        applicationId = "com.forasoft.projecttemplate"
+        applicationId = "com.lyrjie.bloodysimpletracker"
         minSdk = 21
         targetSdk = 33
         versionCode = generatedVersionCode
@@ -68,10 +71,6 @@ android {
             isMinifyEnabled = true
         }
 
-        create(AppBuildType.Demo.name) {
-            isMinifyEnabled = true
-        }
-
         release {
             isMinifyEnabled = true
         }
@@ -94,8 +93,6 @@ android {
             } else {
                 it.resValue("string", Keys.APP_NAME, appName)
             }
-
-            it.setStringField(Keys.BASE_URL, buildType.baseUrl)
         }
     }
     compileOptions {
@@ -158,6 +155,23 @@ dependencies {
     testImplementation(Dependencies.junit)
     androidTestImplementation(Dependencies.androidJunit)
     androidTestImplementation(Dependencies.espresso)
+}
+
+tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile>().configureEach {
+    // Fix from https://youtrack.jetbrains.com/issue/KT-55565/Consider-de-duping-or-blocking-standard-addition-of-freeCompilerArgs-to-KaptGenerateStubsTask
+    val isKaptGenerateStubsTask = this is org.jetbrains.kotlin.gradle.internal.KaptGenerateStubsTask
+    if (!isKaptGenerateStubsTask) {
+        kotlinOptions.freeCompilerArgs += listOf(
+            "-P",
+            "plugin:androidx.compose.compiler.plugins.kotlin:metricsDestination=" +
+                    "${project.buildDir.absolutePath}/composeMetrics"
+        )
+        kotlinOptions.freeCompilerArgs += listOf(
+            "-P",
+            "plugin:androidx.compose.compiler.plugins.kotlin:reportsDestination=" +
+                    "${project.buildDir.absolutePath}/composeMetrics"
+        )
+    }
 }
 
 fun com.android.build.gradle.internal.dsl.BaseAppModuleExtension.setBuildOutputPath(isBuildLocal: Boolean) {

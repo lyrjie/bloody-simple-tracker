@@ -1,4 +1,4 @@
-package com.forasoft.projecttemplate.base.clean
+package com.lyrjie.bloodysimpletracker.base.clean
 
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.withContext

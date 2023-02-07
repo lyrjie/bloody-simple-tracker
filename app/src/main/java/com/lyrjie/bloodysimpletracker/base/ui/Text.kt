@@ -1,6 +1,6 @@
 @file:Suppress("unused")
 
-package com.forasoft.projecttemplate.base.ui
+package com.lyrjie.bloodysimpletracker.base.ui
 
 import android.content.Context
 import androidx.annotation.PluralsRes

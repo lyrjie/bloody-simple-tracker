@@ -17,6 +17,6 @@ dependencyResolutionManagement {
         maven { url = URI.create("https://jitpack.io") }
     }
 }
-// TODO rename
-rootProject.name = "Project Template"
+
+rootProject.name = "Bloody Simple Tracker"
 include(":app")
