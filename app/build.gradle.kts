@@ -22,6 +22,8 @@ androidGitVersion {
 }
 
 android {
+    namespace = "com.lyrjie.bloodysimpletracker"
+
     compileSdk = 33
 
     val isBuildLocal = System.getenv("CI") == null
