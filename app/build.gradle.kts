@@ -69,10 +69,6 @@ android {
             isMinifyEnabled = true
         }
 
-        create(AppBuildType.Demo.name) {
-            isMinifyEnabled = true
-        }
-
         release {
             isMinifyEnabled = true
         }

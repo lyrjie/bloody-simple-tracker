@@ -13,17 +13,13 @@ sealed class AppBuildType {
         override val name = "qa"
     }
 
-    object Demo : AppBuildType() {
-        override val name = "demo"
-    }
-
     object Release : AppBuildType() {
         override val name = "release"
     }
 
     companion object {
         fun getByName(name: String): AppBuildType {
-            return listOf(Debug, Qa, Demo, Release).first {
+            return listOf(Debug, Qa, Release).first {
                 it.name.equals(name, ignoreCase = true)
             }
         }
