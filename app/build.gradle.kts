@@ -1,5 +1,7 @@
 @file:Suppress("UnstableApiUsage")
 
+import com.android.build.gradle.internal.cxx.configure.gradleLocalProperties
+
 plugins {
     id(Plugins.androidApplication)
     id(Plugins.kotlinAndroid)
@@ -30,12 +32,12 @@ android {
     println("Generated Version Name: $generatedVersionName")
 
     signingConfigs {
-        // TODO generate keystore
         create(signingConfigName) {
+            val localProperties = gradleLocalProperties(rootDir)
             storeFile = file("../keystore.jks")
-            storePassword = ""
-            keyAlias = ""
-            keyPassword = ""
+            storePassword = localProperties.getProperty("keystore.password")
+            keyAlias = localProperties.getProperty("keystore.keyAlias")
+            keyPassword = localProperties.getProperty("keystore.password")
         }
     }
 
