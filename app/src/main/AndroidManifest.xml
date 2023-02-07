@@ -10,8 +10,7 @@
         android:networkSecurityConfig="@xml/network_security_config"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
-        android:theme="@style/Theme.ProjectTemplateView">
-        <!-- TODO choose a theme -->
+        android:theme="@style/Theme.BloodySimpleTracker">
         <activity
             android:name="com.lyrjie.bloodysimpletracker.ui.MainActivity"
             android:exported="true">
