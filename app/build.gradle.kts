@@ -91,8 +91,6 @@ android {
             } else {
                 it.resValue("string", Keys.APP_NAME, appName)
             }
-
-            it.setStringField(Keys.BASE_URL, buildType.baseUrl)
         }
     }
     compileOptions {

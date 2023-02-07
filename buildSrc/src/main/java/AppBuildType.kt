@@ -2,9 +2,6 @@ sealed class AppBuildType {
 
     abstract val name: String
 
-    // TODO real base url
-    open val baseUrl: String = ""
-
     object Debug : AppBuildType() {
         override val name = "debug"
     }
