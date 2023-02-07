@@ -1,4 +1,4 @@
-package com.forasoft.projecttemplate
+package com.lyrjie.bloodysimpletracker
 
 import org.junit.Test
 

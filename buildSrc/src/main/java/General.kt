@@ -1,5 +1,4 @@
-// TODO app name
-const val appName = ""
+const val appName = "Bloody Simple Tracker"
 
 // TODO Does your project use compose?
 const val isComposeProject = true

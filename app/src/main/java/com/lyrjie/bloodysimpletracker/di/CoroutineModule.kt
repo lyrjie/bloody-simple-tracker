@@ -1,4 +1,4 @@
-package com.forasoft.projecttemplate.di
+package com.lyrjie.bloodysimpletracker.di
 
 import dagger.Module
 import dagger.Provides

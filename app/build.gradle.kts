@@ -40,8 +40,7 @@ android {
     }
 
     defaultConfig {
-        // TODO change application id
-        applicationId = "com.forasoft.projecttemplate"
+        applicationId = "com.lyrjie.bloodysimpletracker"
         minSdk = 21
         targetSdk = 33
         versionCode = generatedVersionCode

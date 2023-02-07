@@ -1,11 +1,9 @@
-package com.forasoft.projecttemplate.ui
+package com.lyrjie.bloodysimpletracker.ui
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import com.forasoft.projecttemplate.R
+import com.lyrjie.bloodysimpletracker.R
 import dagger.hilt.android.AndroidEntryPoint
-
-// TODO change root package name
 
 @AndroidEntryPoint
 class MainActivity : AppCompatActivity() {

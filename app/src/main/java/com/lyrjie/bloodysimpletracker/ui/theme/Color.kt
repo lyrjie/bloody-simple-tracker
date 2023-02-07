@@ -1,4 +1,4 @@
-package com.forasoft.projecttemplate.ui.theme
+package com.lyrjie.bloodysimpletracker.ui.theme
 
 import androidx.compose.ui.graphics.Color
 
