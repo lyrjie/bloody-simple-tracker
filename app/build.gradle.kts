@@ -125,6 +125,7 @@ dependencies {
 
     implementation(Dependencies.androidCore)
     implementation(Dependencies.appCompat)
+    implementation(Dependencies.activity)
     implementation(Dependencies.material)
     implementation(Dependencies.constraintLayout)
 
