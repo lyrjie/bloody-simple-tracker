@@ -1,0 +1,184 @@
+workflow:
+  rules:
+    - if: $CI_COMMIT_TAG =~ /\/qa$/
+      variables:
+        # The name of the build type to be assembled.
+        # Will be appended to `assemble` or `bundle`, depending on the preferred output
+        BUILD_TYPE_NAME: "Qa"
+        # TODO Project name in the AppCenter
+        # If either of APPCENTER variables is omitted for build type, the steps related to AppCenter are skipped
+        APPCENTER_PROJECT: "project-name-qa"
+        # TODO Project tester group in AppCenter
+        # When release is created, it will be shared with this group right away
+        APPCENTER_GROUP_ID: "aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee"
+        # Whether the "Resolved" tasks should be moved to "RFT" on successful build.
+        # Usually this is only enabled for QA builds.
+        # This also fills Release Notes of the build in AppCenter.
+        WORKFLOW_UPDATE_RFT: "true"
+        # Set this variable to "true" to build aab instead of apk.
+        # NOTE: aab currently can't be uploaded to AppCenter, so you'll have to download job artifacts
+        # and upload bundle yourself
+        # BUILD_BUNDLE: "true"
+    - if: $CI_COMMIT_TAG =~ /\/demo$/
+      variables:
+        BUILD_TYPE_NAME: "Demo"
+        # TODO Project name in the AppCenter
+        APPCENTER_PROJECT: "project-name-demo"
+        # TODO Project tester group in AppCenter
+        APPCENTER_GROUP_ID: "aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee"
+    - if: $CI_COMMIT_TAG =~ /\/release$/
+      variables:
+        BUILD_TYPE_NAME: "Release"
+        # Set this variable to "true" to build aab instead of apk.
+        # NOTE: aab currently can't be uploaded to AppCenter, so you'll have to download job artifacts
+        # and upload bundle yourself
+        BUILD_BUNDLE: "true"
+
+    - if: $CI_COMMIT_REF_NAME == $PUSH_LOCAL_BRANCH
+      variables:
+        WORKFLOW_PUSH_TO_CLIENT: "true"
+    - if: $CI_MERGE_REQUEST_ID != null && $WORKFLOW_MR_RUN_UNIT_TESTS == "true"
+      variables:
+        BUILD_TYPE_NAME: "Debug"
+
+stages:
+  - build
+  - test
+  - deploy-upload
+  - deploy-move-jira-issues
+  - deploy-update-release-notes
+  - deploy-post-to-slack
+  - push-to-client-repository
+
+build app:
+  stage: build
+  image: registry.s2.git.fora-soft.com/forasoft/android-builder:v3-gradle-7.5.1-jdk11
+  artifacts:
+    paths:
+      - app.apk
+      - "*.aab"
+      - .localstore/  # Technical directory for passing data between CI/CD jobs/scripts
+    expire_in: 1 week
+  variables:
+    ANDROID_GRADLE_TASK: assemble${BUILD_TYPE_NAME}
+    APK_NAME: app
+  rules:
+    - if: $WORKFLOW_PUSH_TO_CLIENT == "true"
+      when: never
+    - if: $BUILD_BUNDLE == "true"
+      variables:
+        ANDROID_GRADLE_TASK: bundle${BUILD_TYPE_NAME}
+    - if: $CI_MERGE_REQUEST_ID != null && $WORKFLOW_MR_RUN_UNIT_TESTS == "true"
+      when: never
+    - when: on_success
+      variables:
+        ANDROID_GRADLE_TASK: assemble${BUILD_TYPE_NAME}
+  script:
+    - /scripts/v3_android_build.sh
+    # Move generated Android Bundles (if any) to the root
+    - find ./*/build/outputs/bundle/*/ -name '*.aab' -exec mv {} . \; || exit_code=$
+    - python3 /scripts/android_post_build.py
+  tags: [ demoserver-2 ]
+
+run unit tests:
+  stage: test
+  image: registry.s2.git.fora-soft.com/forasoft/android-builder:v3-gradle-7.5.1-jdk11
+  variables:
+    ANDROID_GRADLE_TASK: test${BUILD_TYPE_NAME}UnitTest
+  only:
+    - merge_requests
+  script:
+    - /scripts/v3_android_build.sh
+  after_script:
+    - find ./*/build/reports/tests/ -maxdepth 0 -exec mv {} ./.reports \;
+  artifacts:
+    when: always
+    paths:
+      - .reports/
+    expire_in: 1 week
+  tags: [ demoserver-2 ]
+
+upload to appcenter:
+  stage: deploy-upload
+  image: registry.s2.git.fora-soft.com/forasoft/android-builder:android-builder
+  rules:
+    - if: $APPCENTER_PROJECT != null && $APPCENTER_GROUP_ID != null
+  script:
+    - /scripts/upload_build_to_appcenter.sh
+    - python3 /scripts/post_upload_build_to_appcenter.py
+  artifacts:
+    paths:
+      - .localstore/
+    expire_in: 1 day
+  dependencies: [ build app ]
+  tags: [ demoserver-2 ]
+
+move jira issues:
+  stage: deploy-move-jira-issues
+  image: registry.s2.git.fora-soft.com/forasoft/android-builder:android-builder
+  rules:
+    - if: $WORKFLOW_UPDATE_RFT == "true"
+  script:
+    - python3 /scripts/move_issues_to_rft.py
+  artifacts:
+    paths:
+      - .localstore/
+    expire_in: 1 day
+  dependencies: [ build app, upload to appcenter ]
+  tags: [ demoserver-2 ]
+
+update release notes:
+  stage: deploy-update-release-notes
+  image: registry.s2.git.fora-soft.com/forasoft/android-builder:android-builder
+  rules:
+    - if: $APPCENTER_PROJECT != null && $APPCENTER_GROUP_ID != null && $WORKFLOW_UPDATE_RFT == "true"
+  script:
+    - python3 /scripts/update_appcenter_release_notes.py
+  dependencies: [ upload to appcenter, move jira issues ]
+  tags: [ demoserver-2 ]
+
+post to slack:
+  stage: deploy-post-to-slack
+  image: registry.s2.git.fora-soft.com/forasoft/android-builder:android-builder
+  rules:
+    - if: $WORKFLOW_PUSH_TO_CLIENT == "true" || $CI_MERGE_REQUEST_ID != null && $WORKFLOW_MR_RUN_UNIT_TESTS == "true"
+      when: never
+    - if: $APPCENTER_PROJECT != null
+    - if: $APPCENTER_PROJECT == null
+      when: manual
+  script:
+    - python3 /scripts/post_build_to_slack.py
+  dependencies: [ upload to appcenter, move jira issues ]
+  tags: [ demoserver-2 ]
+
+Push code to client repository:
+  stage: push-to-client-repository
+  image: alpine
+  rules:
+    - if: '$WORKFLOW_PUSH_TO_CLIENT == "true"'
+      when: manual
+      allow_failure: true
+  before_script:
+    - apk add --update coreutils
+    - apk add git
+  script:
+    - mkdir /source && cd /source
+    - git clone $PUSH_LOCAL_GIT_URL project && cd project
+    - SOURCE="$PWD"
+    - git checkout $PUSH_LOCAL_BRANCH
+    - mkdir -p /client_code && cd /client_code
+    - git clone $PUSH_REMOTE_GIT_URL project && cd project
+    - DEST="$PWD"
+    - cd $SOURCE
+    - cd "$DEST"
+    - git rm -rf .
+    - git clean -fxd
+    - cd $SOURCE
+    - git ls-files | xargs -i sh -c 'mkdir -p "'"$DEST"'/$(dirname {})" && cp {} "'"$DEST"'/$(dirname {})"'
+    - cd "$DEST"
+    - git config user.email $PUSH_AUTHOR_EMAIL
+    - git config user.name "$PUSH_AUTHOR_NAME"
+    - git add --all
+    - git commit -m "Code update"
+    - git push origin $PUSH_REMOTE_BRANCH || true
+  tags: [ demoserver-2 ]
