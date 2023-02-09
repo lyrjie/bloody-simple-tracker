@@ -128,6 +128,7 @@ dependencies {
     implementation(Dependencies.activity)
     implementation(Dependencies.material)
     implementation(Dependencies.constraintLayout)
+    implementation(Dependencies.splashScreen)
 
     if (isComposeProject) {
         implementation(Dependencies.composeCompiler)
