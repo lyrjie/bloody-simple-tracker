@@ -8,11 +8,11 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import com.lyrjie.bloodysimpletracker.components.ui.common.systemui.TransparentSystemBars
-import com.lyrjie.bloodysimpletracker.components.ui.theme.BloodySimpleTrackerTheme
+import com.lyrjie.bloodysimpletracker.components.ui.theme.TrackerTheme
 
 @Composable
-fun BloodSimpleTrackerApp() {
-    BloodySimpleTrackerTheme {
+fun TrackerApp() {
+    TrackerTheme {
         TransparentSystemBars(useDarkIcons = !isSystemInDarkTheme())
         Box(
             modifier = Modifier
