@@ -136,6 +136,7 @@ dependencies {
         implementation(Dependencies.composeUi)
         implementation(Dependencies.composeMaterial3)
         implementation(Dependencies.composePreview)
+        implementation(Dependencies.navigation)
 
         implementation(Dependencies.accompanistSystemUi)
     }
