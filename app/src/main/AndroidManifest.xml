@@ -2,7 +2,7 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
 
     <application
-        android:name="com.lyrjie.bloodysimpletracker.BloodySimpleTrackerApplication"
+        android:name="com.lyrjie.bloodysimpletracker.TrackerApplication"
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"

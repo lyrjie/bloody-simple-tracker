@@ -76,7 +76,7 @@ private val DarkColors = darkColorScheme(
 )
 
 @Composable
-fun BloodySimpleTrackerTheme(
+fun TrackerTheme(
     isDarkTheme: Boolean = isSystemInDarkTheme(),
     content: @Composable () -> Unit,
 ) {
