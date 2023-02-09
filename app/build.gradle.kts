@@ -135,6 +135,7 @@ dependencies {
         implementation(platform(Dependencies.composeBom))
         implementation(Dependencies.composeUi)
         implementation(Dependencies.composeMaterial3)
+        implementation(Dependencies.composeTooling)
         implementation(Dependencies.composePreview)
         implementation(Dependencies.navigation)
 
