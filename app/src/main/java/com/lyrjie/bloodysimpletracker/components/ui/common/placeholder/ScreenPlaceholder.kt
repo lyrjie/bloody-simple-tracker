@@ -1,8 +1,12 @@
 package com.lyrjie.bloodysimpletracker.components.ui.common.placeholder
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
@@ -19,6 +23,7 @@ import com.lyrjie.bloodysimpletracker.components.ui.tooling.ThemePreviews
 fun ScreenPlaceholder(
     title: String,
     modifier: Modifier = Modifier,
+    content: (@Composable () -> Unit)? = null,
 ) {
     Box(
         contentAlignment = Alignment.Center,
@@ -32,12 +37,21 @@ fun ScreenPlaceholder(
             tonalElevation = 8.dp,
             shadowElevation = 8.dp
         ) {
-            Text(
-                text = title,
-                style = MaterialTheme.typography.titleLarge,
-                textAlign = TextAlign.Center,
+            Column(
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.Center,
                 modifier = Modifier.padding(32.dp)
-            )
+            ) {
+                Text(
+                    text = title,
+                    style = MaterialTheme.typography.titleLarge,
+                    textAlign = TextAlign.Center,
+                )
+                if (content != null) {
+                    Spacer(modifier = Modifier.height(16.dp))
+                    content()
+                }
+            }
         }
     }
 }
