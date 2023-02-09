@@ -15,7 +15,7 @@ fun LoginScreen(
     showHome: () -> Unit,
 ) {
     ScreenPlaceholder(
-        title = "Login",
+        title = "Login Screen",
     ) {
         Button(
             onClick = showHome,

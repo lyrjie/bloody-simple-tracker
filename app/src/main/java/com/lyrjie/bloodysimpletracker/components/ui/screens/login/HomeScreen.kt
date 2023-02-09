@@ -5,5 +5,5 @@ import com.lyrjie.bloodysimpletracker.components.ui.common.placeholder.ScreenPla
 
 @Composable
 fun HomeScreen() {
-    ScreenPlaceholder(title = "Home")
+    ScreenPlaceholder(title = "Home Screen")
 }
